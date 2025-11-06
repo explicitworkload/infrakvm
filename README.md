@@ -1,11 +1,14 @@
 # Setup Infra Requirements
-Prepared for Haseem / Sylvia. We're going to prepare infrastructure requirements from scratch, and make this a disconnected cluster.
-- tailscale (your personal VPN)
-- DNS server
+Prepared for Haseem / Sylvia. We're going to prepare infrastructure requirements from scratch, and make this a disconnected cluster. To start off, the steps below will guide you to setup a jumphost (bastion), within it will also contain the following software packages. 
+
+- Tailscale (VPN)
+- DNS server based on AdGuard Home, we will block all DNS internet queries to mimick a airgapped environment.
+
+These steps will take around 1-2 hours.
 
 ## Get your IBM Cloud environment up and create your own jumphost (bastion)
-In customer's environment, there could be RHEL / Ubuntu or other Linux distributions. We're not going to harp on which distro is the jumphost here. Let's start and login to **VMware Cloud**,
-1. Create your Jumphost VM (Ubuntu) with 8 vCPU, 12GB of RAM, 50GB of storage space. This should take around 10-15 minutes. Feel free to follow the video guide, https://share.cleanshot.com/F3M1TQyw
+Let's start and login to **VMware Cloud**, feel free to follow the video guide, https://share.cleanshot.com/F3M1TQyw
+1. Create your Jumphost VM (Ubuntu) with 8 vCPU, 12GB of RAM, 50GB of storage space. This should take around 10-15 minutes. 
 
     - workload_share_FZZZD > ubuntu-24.04.3-desktop-amd64.iso
     ![alt text](images/2025-11-07%2002.44.53@2x.png)
@@ -20,9 +23,9 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     - https://docs.docker.com/engine/install/ubuntu/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
-    If you encounter issue installing docker, skip & follow step 2.
+    If you encounter issue installing docker, skip this step and use my automation script to setup docker.
 
-2. Clone the repository
+2. Clone the repository. Replace <username> with your ubuntu account username.
 
         git clone https://github.com/explicitworkload/infrakvm.git
 
