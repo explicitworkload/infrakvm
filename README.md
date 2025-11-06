@@ -17,15 +17,17 @@ Let's start and login to **VMware Cloud**, feel free to follow the video guide, 
     - VM Settings
     ![alt text](images/2025-11-07%2002.45.50@2x.png)
 
-
+    .
 1. Install **docker**, since we're using Ubuntu, follow this guide:
 
     - https://docs.docker.com/engine/install/ubuntu/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
-    If you encounter issue installing docker, skip this step and use my automation script to setup docker.
+    <em>If you encounter issue installing docker, skip this step and use my automation script to setup docker.</em>
 
-2. Clone the repository. Replace <username> with your ubuntu account username.
+    .
+
+2. Clone the repository. Take note replace <username> with your ubuntu account username.
 
         git clone https://github.com/explicitworkload/infrakvm.git
 
@@ -49,30 +51,13 @@ Let's start and login to **VMware Cloud**, feel free to follow the video guide, 
         chmod +x ./scripts/ubuntu-disableresolved.sh
         ./scripts/ubuntu-disableresolved.sh
 
-2. Let's install DNS & DHCP server:
-    
-        docker compose up -d
+    .
 
-    Open the setup page of AdGuardHome, http://192.168.28.11/ (this is the IP of your jumphost)
+2. Install **tailscale** on **jumphost** https://www.tailscale.com
 
-    * username: admin
-    * password: P@$$w0rd1!
+    At the final step of installation, you need to authenticate & approve your machine in tailscale web console to complete the installation. Try to figure this part out, if not reach out to me.
 
-    Go to Filters -> DNS Rewrites, modify all entries following your environment.
-
-    ![alt text](images/2025-11-07%2004.21.52@2x.png)
-
-
-2. Install **tailscale** on **bastion**, https://www.tailscale.com
-
-    At the final step of installation, you need to authenticate your machine with tailscale to complete installation.
-    
-    Next, run the following in terminal to enable you to access your bastion from your laptop directly. Change the value <em>192.168.x.0</em> to your private network given on the demo environment details.
-
-        tailscale up --advertise-exit-nodes --advertise-routes=192.168.x.0/24
-    
-
-3. Install **tailscale** on your laptop, once installation is complete, check:
+    Once installation is complete, check:
 
         tailscale status
 
@@ -86,15 +71,42 @@ Let's start and login to **VMware Cloud**, feel free to follow the video guide, 
         #     - Some peers are advertising routes but --accept-routes is false
         [lab-user@bastion-zrphd infrakvm]$
 
-4. Login to https://login.tailscale.com/admin/dns and add custom nameserver, under "DNS" in the navigation bar.
+    
+    Next, run the following ONLY in the jumphost terminal to enable you to access your jumphost from your laptop directly. Change the value <em>192.168.x.0</em> to your private network given on the demo environment details.
+
+        sudo tailscale up --advertise-exit-nodes --advertise-routes=192.168.x.0/24
+    
+    .
+3. Install **tailscale** on your laptop, once installation is complete, check:
+
+        tailscale status
+    .
+2. Next, let's install the DNS service. I have scripted most parts, but intentionally kept this step so you know how to start the service again.
+    
+        docker compose up -d
+
+5. Now, let's configure the DNS services. Open the setup page of AdGuardHome from your laptop, http://192.168.28.11/ (this is the IP of your jumphost)
+
+    * username: admin
+    * password: P@$$w0rd1!
+
+    Go to Filters -> DNS Rewrites, modify all entries following your environment.
+
+    ![alt text](images/2025-11-07%2004.21.52@2x.png)
+
+    We will come back to this again when we start setting up OpenShift later.
+
+    .
+
+4. Login to https://login.tailscale.com/admin/dns and add custom nameserver, under "DNS" in the navigation bar. Follow the image and replace the domain with your environment domain.
 
     ![alt text](images/2025-11-07%2004.38.08@2x.png)
-    You should use your jumphost IP instead of 192.168.28.11.
+    You should replace 192.168.28.11 with your jumphost IP.
     
     .
 
 
-4. Edit /etc/chronyc.conf in **bastion**, add in a good ntp source. Always have a good NTP source.
+4. Update NTP for the jumphost. Edit /etc/chronyc.conf in **jumphost**, add in a good ntp source. Always have a good NTP source.
 
     Add the following into /etc/chronyc.conf. using sudo.
 
@@ -112,10 +124,13 @@ Let's start and login to **VMware Cloud**, feel free to follow the video guide, 
         chronyc sources -v
     
     ![alt text](images/2025-11-07%2002.06.32@2x.png "chronyc")
+    .
 
-5. Verify: You should be able to ping your **bastion** (192.168.28.10) from your laptop now.
+5. Verify: You should be able to ping your **jumphost** (192.168.28.10) from your laptop now.
 
         ping bastion-xxxxx
         ping 192.168.28.10
         tailscale ping bastion-xxxxx
 
+    .
+6. Done. Good job.
