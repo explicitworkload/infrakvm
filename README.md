@@ -26,7 +26,7 @@ Login to **bastion**
 
         tailscale status
 
-    (it should look like the following)
+    (it should look similar to the following)
 
         [lab-user@bastion-zrphd infrakvm]$ tailscale status
         100.60.0.1      bastion-zrphd         bastion.bncnbc.ts.net  linux    -
@@ -43,13 +43,21 @@ Login to **bastion**
     - https://docs.docker.com/engine/install/rhel/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
-4. 
+4. on bastion, let's pull from a good ntp source
 
-## This installs 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+    add the following into /etc/chronyc.conf. using sudo.
 
+        pool time.google.com iburst
+        pool time.cloudflare.com iburst
+    ![alt text](images/2025-11-07%2002.02.11@2x.png "ntp")
+
+    save and restart chronyd.
+
+        sudo systemctl restart chronyd
+
+    check chronyc has reached the right ntp sources
+
+        chronyc tracking
+        chronyc sources -v
+    
+    ![alt text](images/2025-11-07%2002.06.32@2x.png) "chronyc")
