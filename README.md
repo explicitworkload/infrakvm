@@ -27,7 +27,7 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
 
         git clone https://github.com/explicitworkload/infrakvm.git
 
-        cd infrakvm && mkdir -p ./adguard/workdir && mkdir -p ./adguard/confdir
+        cd infrakvm
 
         chown -R <username>:docker ./adguard
 
