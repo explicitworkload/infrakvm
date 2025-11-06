@@ -6,6 +6,12 @@ Prepared for Haseem / Sylvia. We're going to prepare infrastructure requirements
 
 These steps will take around 1-2 hours.
 
+Enjoy!
+
+.
+
+.
+
 ## Get your IBM Cloud environment up and create your own jumphost (bastion)
 Let's start and login to **VMware Cloud**, feel free to follow the video guide, https://share.cleanshot.com/F3M1TQyw
 1. Create your Jumphost VM (Ubuntu) with 8 vCPU, 12GB of RAM, 50GB of storage space. This should take around 10-15 minutes. 
