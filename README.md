@@ -21,7 +21,9 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     - https://docs.docker.com/engine/install/ubuntu/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
-2. git clone https://github.com/explicitworkload/infrakvm.git
+2. Let's install DNS & DHCP server:
+
+        git clone https://github.com/explicitworkload/infrakvm.git
 
         cd infrakvm && mkdir -p ./adguard/workdir && mkdir -p ./adguard/confdir
 
