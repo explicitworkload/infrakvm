@@ -83,6 +83,13 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
         #     - Some peers are advertising routes but --accept-routes is false
         [lab-user@bastion-zrphd infrakvm]$
 
+4. Login to https://login.tailscale.com/admin/dns and add custom nameserver, under "DNS" in the navigation bar.
+
+    ![alt text](images/2025-11-07%2004.38.08@2x.png)
+    You should use your jumphost IP instead of 192.168.28.11.
+    
+    .
+
 
 4. Edit /etc/chronyc.conf in **bastion**, add in a good ntp source. Always have a good NTP source.
 
