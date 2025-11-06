@@ -17,3 +17,7 @@ services:
       - "3000:3000/tcp"
     networks:
       lab_nw:
+
+networks:
+  lab_nw:
+    external: true
