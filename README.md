@@ -21,29 +21,48 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     - https://docs.docker.com/engine/install/ubuntu/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
+    If you encounter issue installing docker, skip & follow step 2.
+
 2. Clone the repository
 
         git clone https://github.com/explicitworkload/infrakvm.git
 
         cd infrakvm && mkdir -p ./adguard/workdir && mkdir -p ./adguard/confdir
 
-        chmod +x ./scripts/ubuntu-disableresolved.sh
+        chown -R <username>:docker ./adguard
 
+        chmod -R u+rwX,g+rwX ./adguard
+    
+    .
+
+    (skip this step if your docker installation is successful. press <em>Enter</em> when prompted to create docker baseline policy.)
+
+        chmod +x ./scripts/install-docker.sh
+        ./scripts/install-docker.sh
+        
+    .
+
+    **(continue from this step, to disable ubuntu's default DNS systemresolved)**
+
+        chmod +x ./scripts/ubuntu-disableresolved.sh
         ./scripts/ubuntu-disableresolved.sh
 
 2. Let's install DNS & DHCP server:
-
-        docker network create lab_nw --driver=bridge   --subnet=172.18.0.0/23 --ip-range=172.18.0.0/23 --gateway=172.18.0.1
     
         docker compose up -d
 
-2. Install **tailscale** on **bastion**
+    Open the setup page of AdGuardHome http://192.168.28.11:3000/install.html 
 
-    After installation completes, run the following in terminal,
+
+
+2. Install **tailscale** on **bastion**, https://www.tailscale.com
+
+    At the final step of installation, you need to authenticate your machine with tailscale to complete installation.
+    
+    Next, run the following in terminal to enable you to access your bastion from your laptop directly. Change the value <em>192.168.x.0</em> to your private network given on the demo environment details.
 
         tailscale up --advertise-exit-nodes --advertise-routes=192.168.x.0/24
     
-    <em>(change 192.168.x.0 to your private network given on the demo environment)</em>
 
 3. Install **tailscale** on your laptop, once installation is complete, check:
 
@@ -79,44 +98,9 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     
     ![alt text](images/2025-11-07%2002.06.32@2x.png "chronyc")
 
-5. Next, add firewall rich rules to allow only the 192.168.28.0/24 subnet access. <em>Remember to replace 192.168.x.0/24 with your demo environment's CIDR range.</em>
-
-        sudo su -
-
-    Add rich rules to allow only from 192.168.28.0/24 subnet:
-
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=53 protocol=tcp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=53 protocol=udp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=67 protocol=udp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=68 protocol=udp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=80 protocol=tcp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=443 protocol=tcp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=443 protocol=udp accept'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 port port=3000 protocol=tcp accept'
-
-    Add rich rules to reject access from other IPs on those ports:
-    
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=53 protocol=tcp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=53 protocol=udp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=67 protocol=udp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=68 protocol=udp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=80 protocol=tcp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=443 protocol=tcp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=443 protocol=udp drop'
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 port port=3000 protocol=tcp drop'
-
-    Allow ping from your LAN only (192.168.28.0/24) 
-
-        # Allow ICMP echo-request from 192.168.28.0/24
-        firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.28.0/24 icmp-type name="echo-request" accept'
-
-
-    Reload firewalld to apply changes, and exit from root:
-
-        firewall-cmd --reload && exit
-
-    Verify: You should be able to ping your **bastion** (192.168.28.10) from your laptop now.
+5. Verify: You should be able to ping your **bastion** (192.168.28.10) from your laptop now.
 
         ping bastion-xxxxx
         ping 192.168.28.10
         tailscale ping bastion-xxxxx
+
