@@ -21,7 +21,7 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     - https://docs.docker.com/engine/install/ubuntu/
     - https://docs.docker.com/engine/install/linux-postinstall/
 
-2. Let's install DNS & DHCP server:
+2. Clone the repository
 
         git clone https://github.com/explicitworkload/infrakvm.git
 
@@ -30,6 +30,8 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
         chmod +x ./scripts/ubuntu-disableresolved.sh
 
         ./scripts/ubuntu-disableresolved.sh
+
+2. Let's install DNS & DHCP server:
 
         docker network create lab_nw --driver=bridge   --subnet=172.18.0.0/23 --ip-range=172.18.0.0/23 --gateway=172.18.0.1
     
