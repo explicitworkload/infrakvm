@@ -2,7 +2,6 @@
 Prepared for Haseem / Sylvia. We're going to prepare infrastructure requirements from scratch, and make this a disconnected cluster.
 - tailscale (your personal VPN)
 - DNS server
-- DHCP server
 
 ## Get your IBM Cloud environment up and create your own jumphost (bastion)
 In customer's environment, there could be RHEL / Ubuntu or other Linux distributions. We're not going to harp on which distro is the jumphost here. Let's start and login to **VMware Cloud**,
@@ -51,8 +50,14 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
     
         docker compose up -d
 
-    Open the setup page of AdGuardHome http://192.168.28.11:3000/install.html 
+    Open the setup page of AdGuardHome, http://192.168.28.11/ (this is the IP of your jumphost)
 
+    * username: admin
+    * password: P@$$w0rd1!
+
+    Go to Filters -> DNS Rewrites, modify all entries following your environment.
+
+    ![alt text](images/2025-11-07%2004.21.52@2x.png)
 
 
 2. Install **tailscale** on **bastion**, https://www.tailscale.com
