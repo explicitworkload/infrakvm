@@ -27,6 +27,10 @@ In customer's environment, there could be RHEL / Ubuntu or other Linux distribut
 
         cd infrakvm && mkdir -p ./adguard/workdir && mkdir -p ./adguard/confdir
 
+        chmod +x ./scripts/ubuntu-disableresolved.sh
+
+        ./scripts/ubuntu-disableresolved.sh
+
         docker network create lab_nw --driver=bridge   --subnet=172.18.0.0/23 --ip-range=172.18.0.0/23 --gateway=172.18.0.1
     
         docker compose up -d
