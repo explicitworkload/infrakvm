@@ -2,6 +2,10 @@
 
 Make sure you have infrakvm setup. Let's begin setting up OpenShift.
 
+## Reference Guide
+
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer
+
 # Create Virtual Machines for OpenShift
 
 ### Create 6 VM for master and worker nodes
@@ -53,7 +57,3 @@ Video tutorial if you need: https://share.cleanshot.com/PMdqHQFc, follow the par
     tar -xvf openshift-client.tar.gz
 
     sudo mv oc /usr/bin
-
-## Reference Guide
-
-https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer
