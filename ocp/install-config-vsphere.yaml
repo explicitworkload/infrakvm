@@ -1,18 +1,18 @@
 # https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#installation-bare-metal-agent-installer-config-yaml_preparing-to-install-with-agent-based-installer
 # https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#validations-before-agent-iso-creation_preparing-to-install-with-agent-based-installer
 apiVersion: v1
-baseDomain: kubernetes.day
+baseDomain: zrphd.dynamic.redhatworkshops.io # Labbers - Edit this
 compute:
 - name: worker
   architecture: amd64
   hyperthreading: Enabled
-  replicas: 6
+  replicas: 3 # Labbers - Edit this
   platform: vsphere
 controlPlane:
   name: master
   architecture: amd64
   hyperthreading: Enabled
-  replicas: 3
+  replicas: 3 # Labbers - Edit this
   platform: vsphere
 metadata:
   name: avengers
@@ -36,7 +36,7 @@ platform:
       datacenters:
       server: vcsnsx-vc.infra.demo.redhat.com
       user: sandbox-zrphd@demo
-      password: XXXXXXXXX
+      password: XXXXXXXXX # Labbers - Edit this
 #
 #  baremetal: #baremetal, vsphere, nutanix, external and none platforms are supported.
 #    apiVIPs:
@@ -44,10 +44,12 @@ platform:
 #    ingressVIPs:
 #    - 192.168.16.19
 #
+
 fips: false
-pullSecret: '{"auths":{"quay.kubernetes.day":{"auth":"XXXXX"}}}'
-sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKY6TrKDE+xWKzVz/EISjPrpIxGBuCu+FHzlN1jvkHlzqTm7AD0MCD2P79w761e61cz/KaBGVdN1paJe0IZTPp6pWlmcIUJHcnrLPMPlYqdqTqUk+h8QjIfl8mvD6J5p3m010N6Ls9LnNt9YyNEKhEFwrZ7UOLL+uf76nj+524Qnfp358PCVvhujaHvpR34bdxlrTptApRs4Va+mDpOuH0ShXJejF9wbaCI30HGl2AqxUFNggSfkGTPrDhfjFftTnA7KvCBoSMPs3hoUKNQuGt9csqFCadNjkeovjmmiiU6eoy1vNdICfGe7kMnFxvoB09rMgcK767+2xKfAwBWDLRU9wq6kElY310kHzdNEWuRjldCaz6zlWucDiDJ/Ib+QpIduS72015zSNa8wp0jvtZ4y6VQiKku2NePe7Hx802rysu85JEk81IFSX/b7jvaR0eIbLMNhfw0g1YRUbdwqUc3vOGxYHWZUgMXJEeDY2FTUn4PbY8hpTWlp6Zp/Rplc8='
+pullSecret: '{"auths":{"quay.kubernetes.day":{"auth":"XXXXX"}}}' # Labbers - Edit this
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKY6TrKDE+xWKzVz/EISjPrpIxGBuCu+FHzlN1jvkHlzqTm7AD0MCD2P79w761e61cz/KaBGVdN1paJe0IZTPp6pWlmcIUJHcnrLPMPlYqdqTqUk+h8QjIfl8mvD6J5p3m010N6Ls9LnNt9YyNEKhEFwrZ7UOLL+uf76nj+524Qnfp358PCVvhujaHvpR34bdxlrTptApRs4Va+mDpOuH0ShXJejF9wbaCI30HGl2AqxUFNggSfkGTPrDhfjFftTnA7KvCBoSMPs3hoUKNQuGt9csqFCadNjkeovjmmiiU6eoy1vNdICfGe7kMnFxvoB09rMgcK767+2xKfAwBWDLRU9wq6kElY310kHzdNEWuRjldCaz6zlWucDiDJ/Ib+QpIduS72015zSNa8wp0jvtZ4y6VQiKku2NePe7Hx802rysu85JEk81IFSX/b7jvaR0eIbLMNhfw0g1YRUbdwqUc3vOGxYHWZUgMXJEeDY2FTUn4PbY8hpTWlp6Zp/Rplc8=' # Labbers - Edit this
 imageContentSources:
+# Labbers - Edit this
 - mirrors:
   - registry.us.kubernetes.day/quayadmin/openshift/release-images
   source: quay.io/openshift-release-dev/ocp-release
