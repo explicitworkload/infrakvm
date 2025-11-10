@@ -116,3 +116,8 @@ Your air-gapped environment needs a local container registry to store the OpenSh
 Since the environment is (simulated) air-gapped, you'll still need to download the OpenShift images on a machine with internet access and then transfer them to your jumphost.
 
 1. On a jumphost, download the oc-mirror tool:
+
+   ```
+   curl -o oc-mirror.tar.gz https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.rhel9.tar.gz
+   tar -xvf oc-mirror.tar.gz
+   ```
