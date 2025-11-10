@@ -239,5 +239,3 @@ You have now completed the setup. From your laptop, verify that all components a
 
 Let's go, click > [OpenShift.md](OpenShift.md)
 
-
-```
