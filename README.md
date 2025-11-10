@@ -5,7 +5,7 @@
 
 ## Overview
 
-This guide walks through the creation of a **jumphost (bastion)** for a disconnected cluster environment. This setup is designed for **Haseem, Sylvia, LC, and Siyu**.
+This guide walks through the creation of a **jumphost (bastion)** for a disconnected cluster environment.
 
 We'll begin by setting up a **jumphost (bastion)** that will include:
 
