@@ -1,59 +1,92 @@
-# Setup openshift client
+## OpenShift Cluster Setup Guide
 
-Make sure you have infrakvm setup. Let's begin setting up OpenShift.
+This guide outlines the steps required to prepare the environment and install the necessary tools for deploying an OpenShift Container Platform cluster.
 
-## Reference Guide
+### Prerequisites
 
-https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer
+Before you begin, ensure the following requirements are met:
 
-# Create Virtual Machines for OpenShift
+- The `infrakvm` environment is properly set up and accessible. Otherwise, start at [Infrastructure Requirement](README.md)
+- A `jumphost` virtual machine is provisioned and running.
 
-### Create 6 VM for master and worker nodes
+### Provision Virtual Machines
 
-Video tutorial if you need: https://share.cleanshot.com/PMdqHQFc, follow the parameters as follows,
+Create six virtual machines to serve as the master and worker nodes for the OpenShift cluster. Configure each VM with a unique MAC address according to the specifications below.
 
-    3 x Master
-    - 8 vCPU
-    - 16GB RAM
-    - Any storage device
-    - MAC Address: 00:50:56:00:00:01 to 00:00:03 (assign unique MAC for each of the node)
+| Node Type  | Quantity | vCPU | RAM   | Storage | MAC Address Range                         |
+| :--------- | :------- | :--- | :---- | :------ | :---------------------------------------- |
+| **Master** | 3        | 8    | 16 GB | Any     | `00:50:56:00:00:01` - `00:50:56:00:00:03` |
+| **Worker** | 3        | 16   | 32 GB | Any     | `00:50:56:00:00:04` - `00:50:56:00:00:06` |
 
-    3 x Worker
-    - 16 vCPU
-    - 32GB RAM
-    - Any storage device
-    - MAC Address: 00:50:56:00:00:04 to 00:00:06 (assign unique MAC for each of the node)
+### Configure Jumphost Storage
 
-## Add one 1TB Hard Disk into jumphost
+You need to add and configure a dedicated 1 TB disk on the **jumphost** to store installation files and cluster assets.
 
-    [shutdown jumphost]
-    go to vCenter
-    Edit jumphost's Virtual Hardware.
-    Add New Device > Hard Disk > Specify 1024GB > Press Ok.
-    Actions -> Power On.
+1.  Power down the **jumphost** VM.
+2.  In vCenter, edit the VM's settings to add a new 1 TB hard disk.
+3.  Power the **jumphost** back on.
+4.  Connect to the **jumphost** and run the following commands to partition, format, and mount the new disk. Verify the new disk is identified as `/dev/sdb` using the `lsblk` command before proceeding.
 
-![alt text](images/2025-11-10%2017.00.10@2x.png)
-
-### Run the following commands in jumphost, use _lsblk_ to check 1TB diskpath is /dev/sdb
-
+    ```
+    # Verify the disk path
     lsblk
+
+    # Wipe any existing filesystem signatures
     sudo wipefs -a /dev/sdb
+
+    # Initialize the disk as a physical volume for LVM
     sudo pvcreate /dev/sdb
+
+    # Create a volume group named 'vgdata'
     sudo vgcreate vgdata /dev/sdb
+
+    # Create a logical volume named 'lvdata' using all available space
     sudo lvcreate -n lvdata -l 100%FREE vgdata
+
+    # Format the logical volume with an ext4 filesystem
     sudo mkfs.ext4 -L data /dev/vgdata/lvdata
+
+    # Create the mount point
     sudo mkdir -p /data
+
+    # Change ownership of the mount point to your user
+    # Replace <username> with your actual username
     sudo chown -R <username> /data
+
+    # Add the new filesystem to /etc/fstab for automatic mounting on boot
     UUID=$(sudo blkid -s UUID -o value /dev/vgdata/lvdata)
     echo "UUID=$UUID /data ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+
+    # Reload daemon services
+    sudo systemctl daemon-reload
+
+    # Mount all filesystems listed in /etc/fstab
     sudo mount -a
+    ```
 
-## Download oc client in jumphost
+### Install OpenShift Client (oc)
 
+Download and install the OpenShift command-line client (`oc`) on the **jumphost**.
+
+1.  Navigate to the newly created data directory.
+
+    ```
     cd /data
+    ```
 
-    curl -o openshift-client.tar.gz https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+2.  Download the latest stable OpenShift client for Linux from the official mirror.
 
-    tar -xvf openshift-client.tar.gz
+    ```
+    curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+    ```
 
-    sudo mv oc /usr/bin
+3.  Extract the contents of the downloaded archive.
+
+    ```
+    tar -xvf openshift-client-linux.tar.gz
+    ```
+
+4.  Move the `oc` binary to a directory in your system's PATH to make it globally accessible.
+    ```
+    sudo mv oc /usr/bin/
+    ```
