@@ -100,7 +100,7 @@ Download and install the OpenShift command-line client (`oc`) on the **jumphost*
 
 4.  Move the `oc` binary to a directory in your system's PATH to make it globally accessible.
     ```
-    sudo mv oc /usr/bin/
+    sudo mv oc kubectl /usr/bin/
     ```
 
 ## Step 3. OpenShift Installation (Agent-Based, Air-Gapped)

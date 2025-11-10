@@ -97,7 +97,7 @@ Now, install Docker, which is required to run AdGuard Home. Since this is Ubuntu
 
     ```
     chmod +x ./scripts/install-docker.sh
-    ./scripts/install-docker.sh
+    sudo ./scripts/install-docker.sh
     ```
 
 4.  **Verify Installation:** Check that Docker is running correctly. You may need to logout and login to your SSH session again.
@@ -122,6 +122,7 @@ With Docker ready, deploy AdGuard Home using the provided `docker-compose.yml`.
 2.  **Launch the service:**
 
     ```
+    docker network create lab_nw --driver=bridge   --subnet=172.18.0.0/23 --ip-range=172.18.0.0/23 --gateway=172.18.0.1
     docker compose up -d
     ```
 
