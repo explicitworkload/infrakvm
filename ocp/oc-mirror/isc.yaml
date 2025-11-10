@@ -94,7 +94,7 @@ mirror:
       - name: stable
     - name: submariner
       channels:
-      - name: stable-0.20
+      - name: stable-0.21
     - name: rhtpa-operator
       channels:
       - name: stable
@@ -108,7 +108,7 @@ mirror:
     packages:
     - name: gpu-operator-certified
       channels:
-      - name: v25.3
+      - name: v25.10
   additionalImages:
   # how you include additional images that you want to be part of the mirror download
   - name: registry.redhat.io/rhel9/support-tools:latest
