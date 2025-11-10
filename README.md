@@ -228,11 +228,12 @@ You have now completed the setup. From your laptop, verify that all components a
     ping <JUMPHOST_PRIVATE_IP>
     ```
 
-2.  **Test DNS resolution** using `dig`. The first command should resolve to your internal IP via AdGuard, and the second should fail (as per the air-gap goal):
+2.  **Test DNS resolution** using `dig`. The first command should resolve to your internal IP via AdGuard, and the second should resolve, and the third should pass now but fail later (as per the air-gap goal):
 
     ```
-    dig api.openshift.internal @<JUMPHOST_PRIVATE_IP>
+    dig api.zrphd.dynamic.redhatworkshops.io @<JUMPHOST_PRIVATE_IP>
     dig google.com @<JUMPHOST_PRIVATE_IP>
+    dig redhat.io @<JUMPHOST_PRIVATE_IP>
     ```
 
 ## Good job. You are now ready to proceed to the next stage.
