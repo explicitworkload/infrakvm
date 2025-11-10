@@ -11,12 +11,24 @@ Before you begin, ensure the following requirements are met:
 
 ## Step 1. Provision Virtual Machines
 
-Create six virtual machines to serve as the master and worker nodes for the OpenShift cluster. Configure each VM with a unique MAC address according to the specifications below.
+1. Create six virtual machines to serve as the master and worker nodes for the OpenShift cluster. Configure each VM with a unique MAC address according to the specifications below.
 
-| Node Type  | Quantity | vCPU | RAM   | Storage | MAC Address Range                         |
-| :--------- | :------- | :--- | :---- | :------ | :---------------------------------------- |
-| **Master** | 3        | 8    | 16 GB | Any     | `00:50:56:00:00:01` - `00:50:56:00:00:03` |
-| **Worker** | 3        | 16   | 32 GB | Any     | `00:50:56:00:00:04` - `00:50:56:00:00:06` |
+   | Node Type  | Quantity | vCPU | RAM   | Storage1 | Storage2 | MAC Address Range                         |
+   | :--------- | :------- | :--- | :---- | :------- | :------- | :---------------------------------------- |
+   | **Master** | 3        | 8    | 16 GB | 120GB    | 50GB     | `00:50:56:00:00:01` - `00:50:56:00:00:03` |
+   | **Worker** | 3        | 16   | 32 GB | 120GB    | 50GB     | `00:50:56:00:00:04` - `00:50:56:00:00:06` |
+
+   > 💬 **Note:**  
+   > You can name them master-1, master-2, master-3, worker-1, worker-2, worker-3...
+
+2. Add disk.EnableUUID=true in each of the VM.
+
+   <em>(Specific to VMware only) Enabling `disk.EnableUUID=true` exposes the virtual disk's unique identifier (UUID) to the guest operating system. This is critical for an OpenShift cluster, as it allows Kubernetes to reliably identify and attach the correct persistent storage volumes to nodes. Without this setting, storage may fail to mount properly, leading to application downtime.</em>
+
+   - Navigate to Edit Settings and select the Advanced Parameters section.
+   - In the **Attribute** column, type `disk.EnableUUID`.
+   - In the **Value** column, type `TRUE`.
+   - Click ADD and click Ok to save the changes.
 
 ### Configure Jumphost Storage
 
@@ -97,4 +109,10 @@ Installing OpenShift in an air-gapped (or disconnected) environment requires mir
 
 #### 1. Set Up a Local Mirror Registry
 
-Your air-gapped environment needs a local container registry to store the OpenShift images. This registry will be hosted on your **jumphost**.
+Your air-gapped environment needs a local container registry to store the OpenShift images. This registry has been pre-installed for you at https://quay.kubernetes.day/ so that you can skip this portion. Take note the lightweight mirror-registry is not meant for production usage.
+
+#### 2. Mirror the OpenShift Images
+
+Since the environment is (simulated) air-gapped, you'll still need to download the OpenShift images on a machine with internet access and then transfer them to your jumphost.
+
+1. On a jumphost, download the oc-mirror tool:

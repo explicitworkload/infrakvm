@@ -161,7 +161,7 @@ Install Tailscale on both the jumphost and your laptop to create a secure overla
 
     - Go to the [**Machines** page](https://login.tailscale.com/admin/machines) in the Tailscale admin console.
     - Find your jumphost, click the three-dot menu, and select **Edit route settings...**.
-    - Approve the subnet route you advertised.
+    - Approve the subnet route & exit node you advertised.
 
 5.  **Verify Status:** On both machines, run `tailscale status` to see your connected devices.
 
