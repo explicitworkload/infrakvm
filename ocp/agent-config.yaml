@@ -1,0 +1,256 @@
+# https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#agent-host-roles_preparing-to-install-with-agent-based-installer
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: avengers
+rendezvousIP: 192.168.16.20 # read about rendezvousIP & DHCP
+hosts:
+  - hostname: master-0
+    role: master
+    rootDeviceHints:
+         deviceName: "/dev/sda"
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:20
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:20
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.20
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: master-1
+    role: master
+    rootDeviceHints:
+         deviceName: "/dev/sda"
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:21
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:21
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.21
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: master-2
+    role: master
+    rootDeviceHints:
+         deviceName: "/dev/sda"
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:22
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:22
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.22
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-0
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:30
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:30
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.30
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-1
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:31
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:31
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.31
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-2
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:32
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:32
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.32
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-3
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:33
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:33
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.33
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-4
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:34
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:34
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.34
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254
+  - hostname: worker-5
+    role: worker
+    interfaces:
+      - name: ens192
+        macAddress: 00:AA:BB:CC:DD:35
+    networkConfig:
+      interfaces:
+        - name: ens192
+          type: ethernet
+          state: up
+          mac-address: 00:AA:BB:CC:DD:35
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.16.35
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.16.11
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.16.1 
+            next-hop-interface: ens192
+            table-id: 254

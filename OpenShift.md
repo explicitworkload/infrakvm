@@ -76,6 +76,8 @@ You need to add and configure a dedicated 1 TB disk on the **jumphost** to store
     sudo mount -a
     ```
 
+---
+
 ## Step 2. Install OpenShift Client (oc)
 
 Download and install the OpenShift command-line client (`oc`) on the **jumphost**.
@@ -103,6 +105,8 @@ Download and install the OpenShift command-line client (`oc`) on the **jumphost*
     sudo mv oc kubectl /usr/bin/
     ```
 
+---
+
 ## Step 3. OpenShift Installation (Agent-Based, Air-Gapped)
 
 Installing OpenShift in an air-gapped (or disconnected) environment requires mirroring the necessary container images to a local registry that your cluster can access. The agent-based installer simplifies the node provisioning process.
@@ -115,9 +119,45 @@ Your air-gapped environment needs a local container registry to store the OpenSh
 
 Since the environment is (simulated) air-gapped, you'll still need to download the OpenShift images on a machine with internet access and then transfer them to your jumphost.
 
-1. On a jumphost, download the oc-mirror tool:
+1. On the jumphost, download the oc-mirror tool:
 
    ```
    curl -o oc-mirror.tar.gz https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.rhel9.tar.gz
    tar -xvf oc-mirror.tar.gz
+   sudo mv oc-mirror /usr/bin
+   ```
+
+2. Validate oc-mirror is working
+
+   ```
+   oc-mirror version
+   ```
+
+3. Create an `imageset-config.yaml` file.
+
+   This file specifies which OpenShift version and operator images to mirror. Use a reference imageset configuration and build on from there.
+
+   - [isc.yaml](ocp/oc-mirror/isc.yaml)
+   - [isc-additional.yaml](ocp/oc-mirror/isc-additional.yaml)
+
+4. Mirror the images to a directory:
+
+   Run the oc-mirror command to download the images specified in your imageset-config.yaml.
+
+   ```
+   oc-mirror --config=~/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/ --v2
+   ```
+
+   This will create a mirror_seq<#>.tar file in the /data/mirror directory.
+
+5. Push the images to your local mirror registry:
+
+   On the jumphost, unpack the mirrored data and push it to your local registry.
+
+   ```
+   # Navigate to the mirrored data directory
+   mkdir -p /data/mirror && cd /data/mirror
+
+   # Push the images to your local registry
+   oc-mirror --from=./mirror_seq1.tar docker://quay.kubernetes.day --v2
    ```

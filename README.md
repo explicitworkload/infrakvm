@@ -32,7 +32,8 @@ First, create the Ubuntu virtual machine that will serve as the jumphost.
 
     - **vCPU:** 8
     - **RAM:** 12 GB
-    - **Storage:** 50 GB
+    - **Storage:** 50 GB (Ubuntu root)
+    - **Storage 2:** 1024 GB (/data)
     - **OS Image:** Select the `ubuntu-24.04.3-desktop-amd64.iso` located in the `workload_share_FZZZD` content library.
 
     ![VM Creation](images/2025-11-07%2002.44.53@2x.png)

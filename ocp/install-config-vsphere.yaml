@@ -1,0 +1,167 @@
+# https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#installation-bare-metal-agent-installer-config-yaml_preparing-to-install-with-agent-based-installer
+# https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#validations-before-agent-iso-creation_preparing-to-install-with-agent-based-installer
+apiVersion: v1
+baseDomain: kubernetes.day
+compute:
+- name: worker
+  architecture: amd64
+  hyperthreading: Enabled
+  replicas: 6
+  platform: vsphere
+controlPlane:
+  name: master
+  architecture: amd64
+  hyperthreading: Enabled
+  replicas: 3
+  platform: vsphere
+metadata:
+  name: avengers
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 192.168.28.0/24 # Labbers - Edit this
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  #  none: {}
+  # platform.vsphere (not recommended for agent-based)
+  vsphere:
+    failureDomains:
+      topology:
+        folder: /SDDC-Datacenter/vm/Workloads/sandbox-xlrjz # Labbers - Edit this
+    vcenters:
+      datacenters:
+      server: vcsnsx-vc.infra.demo.redhat.com
+      user: sandbox-zrphd@demo
+      password: XXXXXXXXX
+#
+#  baremetal: #baremetal, vsphere, nutanix, external and none platforms are supported.
+#    apiVIPs:
+#    - 192.168.16.18
+#    ingressVIPs:
+#    - 192.168.16.19
+#
+fips: false
+pullSecret: '{"auths":{"quay.kubernetes.day":{"auth":"XXXXX"}}}'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKY6TrKDE+xWKzVz/EISjPrpIxGBuCu+FHzlN1jvkHlzqTm7AD0MCD2P79w761e61cz/KaBGVdN1paJe0IZTPp6pWlmcIUJHcnrLPMPlYqdqTqUk+h8QjIfl8mvD6J5p3m010N6Ls9LnNt9YyNEKhEFwrZ7UOLL+uf76nj+524Qnfp358PCVvhujaHvpR34bdxlrTptApRs4Va+mDpOuH0ShXJejF9wbaCI30HGl2AqxUFNggSfkGTPrDhfjFftTnA7KvCBoSMPs3hoUKNQuGt9csqFCadNjkeovjmmiiU6eoy1vNdICfGe7kMnFxvoB09rMgcK767+2xKfAwBWDLRU9wq6kElY310kHzdNEWuRjldCaz6zlWucDiDJ/Ib+QpIduS72015zSNa8wp0jvtZ4y6VQiKku2NePe7Hx802rysu85JEk81IFSX/b7jvaR0eIbLMNhfw0g1YRUbdwqUc3vOGxYHWZUgMXJEeDY2FTUn4PbY8hpTWlp6Zp/Rplc8='
+imageContentSources:
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/web-terminal
+  source: registry.redhat.io/web-terminal
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-service-mesh-dev-preview-beta
+  source: registry.redhat.io/openshift-service-mesh-dev-preview-beta
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/compliance
+  source: registry.redhat.io/compliance
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/nvidia
+  source: nvcr.io/nvidia
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/quay
+  source: registry.redhat.io/quay
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/migration-toolkit-virtualization
+  source: registry.redhat.io/migration-toolkit-virtualization
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-serverless-1
+  source: registry.redhat.io/openshift-serverless-1
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/kmm
+  source: registry.redhat.io/kmm
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift4
+  source: registry.redhat.io/openshift4
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/nvidia
+  source: registry.connect.redhat.com/nvidia
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-service-mesh-tech-preview
+  source: registry.redhat.io/openshift-service-mesh-tech-preview
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/nvidia/cloud-native
+  source: nvcr.io/nvidia/cloud-native
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rhcl-1
+  source: registry.redhat.io/rhcl-1
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/lvms4
+  source: registry.redhat.io/lvms4
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-logging
+  source: registry.redhat.io/openshift-logging
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/nvidia/k8s
+  source: nvcr.io/nvidia/k8s
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/cluster-observability-operator
+  source: registry.redhat.io/cluster-observability-operator
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-gitops-1
+  source: registry.redhat.io/openshift-gitops-1
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/odf4
+  source: registry.redhat.io/odf4
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rhacm2
+  source: registry.redhat.io/rhacm2
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rhel8
+  source: registry.redhat.io/rhel8
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/service-interconnect
+  source: registry.redhat.io/service-interconnect
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rhel9
+  source: registry.redhat.io/rhel9
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/openshift-service-mesh
+  source: registry.redhat.io/openshift-service-mesh
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/ubi8
+  source: registry.access.redhat.com/ubi8
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rhtpa
+  source: registry.redhat.io/rhtpa
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/container-native-virtualization
+  source: registry.redhat.io/container-native-virtualization
+- mirrors:
+  - registry.us.kubernetes.day/quayadmin/rh-sso-7
+  source: registry.redhat.io/rh-sso-7
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIEVzCCAj+gAwIBAgIRAIOPbGPOsTmMYgZigxXJ/d4wDQYJKoZIhvcNAQELBQAw
+  TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+  cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjQwMzEzMDAwMDAw
+  WhcNMjcwMzEyMjM1OTU5WjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+  RW5jcnlwdDELMAkGA1UEAxMCRTUwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAQNCzqK
+  a2GOtu/cX1jnxkJFVKtj9mZhSAouWXW0gQI3ULc/FnncmOyhKJdyIBwsz9V8UiBO
+  VHhbhBRrwJCuhezAUUE8Wod/Bk3U/mDR+mwt4X2VEIiiCFQPmRpM5uoKrNijgfgw
+  gfUwDgYDVR0PAQH/BAQDAgGGMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+  ATASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdDgQWBBSfK1/PPCFPnQS37SssxMZw
+  i9LXDTAfBgNVHSMEGDAWgBR5tFnme7bl5AFzgAiIyBpY9umbbjAyBggrBgEFBQcB
+  AQQmMCQwIgYIKwYBBQUHMAKGFmh0dHA6Ly94MS5pLmxlbmNyLm9yZy8wEwYDVR0g
+  BAwwCjAIBgZngQwBAgEwJwYDVR0fBCAwHjAcoBqgGIYWaHR0cDovL3gxLmMubGVu
+  Y3Iub3JnLzANBgkqhkiG9w0BAQsFAAOCAgEAH3KdNEVCQdqk0LKyuNImTKdRJY1C
+  2uw2SJajuhqkyGPY8C+zzsufZ+mgnhnq1A2KVQOSykOEnUbx1cy637rBAihx97r+
+  bcwbZM6sTDIaEriR/PLk6LKs9Be0uoVxgOKDcpG9svD33J+G9Lcfv1K9luDmSTgG
+  6XNFIN5vfI5gs/lMPyojEMdIzK9blcl2/1vKxO8WGCcjvsQ1nJ/Pwt8LQZBfOFyV
+  XP8ubAp/au3dc4EKWG9MO5zcx1qT9+NXRGdVWxGvmBFRAajciMfXME1ZuGmk3/GO
+  koAM7ZkjZmleyokP1LGzmfJcUd9s7eeu1/9/eg5XlXd/55GtYjAM+C4DG5i7eaNq
+  cm2F+yxYIPt6cbbtYVNJCGfHWqHEQ4FYStUyFnv8sjyqU8ypgZaNJ9aVcWSICLOI
+  E1/Qv/7oKsnZCWJ926wU6RqG1OYPGOi1zuABhLw61cuPVDT28nQS/e6z95cJXq0e
+  K1BcaJ6fJZsmbjRgD5p3mvEf5vdQM7MCEvU0tHbsx2I5mHHJoABHb8KVBgWp/lcX
+  GWiWaeOyB7RP+OfDtvi2OsapxXiV7vNVs7fMlrRjY1joKaqmmycnBvAq14AEbtyL
+  sVfOS66B8apkeFX2NY4XPEYV4ZSCe8VHPrdrERk2wILG3T/EGmSIkCYVUMSnjmJd
+  VQD9F6Na/+zmXCc=
+  -----END CERTIFICATE-----
