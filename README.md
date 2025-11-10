@@ -1,7 +1,7 @@
 # Setup Infra Requirements
 Prepared for Haseem / Sylvia / LC / Siyu. We're going to prepare infrastructure requirements from scratch, and make this a disconnected cluster. To start off, the steps below will guide you to setup a jumphost (bastion), within it will also contain the following software packages. 
 
-- Tailscale (VPN)
+- Tailscale (VPN) - use your personal Google account.
 - DNS server based on AdGuard Home, we will block all DNS internet queries to mimick a airgapped environment.
 
 These steps will take around 1-2 hours.
