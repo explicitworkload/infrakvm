@@ -155,6 +155,10 @@ Since the environment is (simulated) air-gapped, you'll still need to download t
    On the jumphost, unpack the mirrored data and push it to your local registry.
 
    ```
+   Login to your container registry
+    - https://quay.kubernetes.day
+    - https://quay2.kubernetes.day
+
    # Navigate to the mirrored data directory
    mkdir -p /data/mirror && cd /data/mirror
 
