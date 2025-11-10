@@ -13,7 +13,7 @@ We'll begin by setting up a **jumphost (bastion)** that will include:
 
 - 🧩 **AdGuard Home:** A network-wide DNS sinkhole that will act as our local DNS server, blocking outside queries to simulate an air-gapped environment.
 
-⏱ **Estimated duration:** 60-120 minutes.  
+⏱ **Estimated duration:** 60-120 minutes.
 💡 **Tip:** Keep this guide handy; you’ll return to it later during the OpenShift setup.
 
 ### Prerequisites
@@ -127,6 +127,7 @@ With Docker ready, deploy AdGuard Home using the provided `docker-compose.yml`.
 
 3.  **Complete the AdGuard Setup:**
 
+    - 💡 Credentials: admin // P@$$w0rd1
     - Open a browser on your laptop and navigate to `http://<JUMPHOST_IP>:3000`, replacing `<JUMPHOST_IP>` with your VM's private IP address (e.g., `192.168.28.11`).
     - On the "Welcome" screen, set the **Admin Web Interface** to listen on `All interfaces` and the **DNS server** to listen on your jumphost's private IP.
     - When prompted, create a secure **username** and **password**. Do not use the example password from the old guide.
@@ -239,4 +240,3 @@ You have now completed the setup. From your laptop, verify that all components a
 ## Good job. You are now ready to proceed to the next stage.
 
 Let's go, click > [OpenShift.md](OpenShift.md)
-

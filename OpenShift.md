@@ -9,7 +9,7 @@ Before you begin, ensure the following requirements are met:
 - The `infrakvm` environment is properly set up and accessible. Otherwise, start at [Infrastructure Requirement](README.md)
 - A `jumphost` virtual machine is provisioned and running.
 
-### Provision Virtual Machines
+## Step 1. Provision Virtual Machines
 
 Create six virtual machines to serve as the master and worker nodes for the OpenShift cluster. Configure each VM with a unique MAC address according to the specifications below.
 
@@ -64,7 +64,7 @@ You need to add and configure a dedicated 1 TB disk on the **jumphost** to store
     sudo mount -a
     ```
 
-### Install OpenShift Client (oc)
+## Step 2. Install OpenShift Client (oc)
 
 Download and install the OpenShift command-line client (`oc`) on the **jumphost**.
 
@@ -90,3 +90,11 @@ Download and install the OpenShift command-line client (`oc`) on the **jumphost*
     ```
     sudo mv oc /usr/bin/
     ```
+
+## Step 3. OpenShift Installation (Agent-Based, Air-Gapped)
+
+Installing OpenShift in an air-gapped (or disconnected) environment requires mirroring the necessary container images to a local registry that your cluster can access. The agent-based installer simplifies the node provisioning process.
+
+#### 1. Set Up a Local Mirror Registry
+
+Your air-gapped environment needs a local container registry to store the OpenShift images. This registry will be hosted on your **jumphost**.
