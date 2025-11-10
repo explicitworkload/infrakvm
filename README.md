@@ -147,10 +147,8 @@ Let's start and login to **VMware Cloud**, feel free to follow the video guide, 
 
 1.  Done. Good job.
 
-1.  Create 6 Virtual Machines for master and worker nodes -> follow my guide here
-    https://share.cleanshot.com/PMdqHQFc
+.
 
-        - 8 vCPU
-        - 16GB RAM
-        - Any storage device
-        - MAC Address: 00:00:01 to 00:00:06
+# Carry on to the next page
+
+[OpenShift.md](README.md)
