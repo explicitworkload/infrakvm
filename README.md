@@ -151,7 +151,7 @@ Install Tailscale on both the jumphost and your laptop to create a secure overla
     - **Important:** Replace `192.168.x.0/24` with the actual private subnet for your environment.
 
     ```
-    sudo tailscale up --advertise-routes=192.168.x.0/24 --accept-routes
+    sudo tailscale up --advertise-routes=192.168.x.0/24 --advertise-exit-nodes --reset
     ```
 
 3.  **Install Tailscale on Your Laptop.** Install the appropriate client for your OS and log in.
@@ -237,12 +237,7 @@ You have now completed the setup. From your laptop, verify that all components a
 
 ## Good job. You are now ready to proceed to the next stage.
 
-Let's go, click > [OpenShift.md](README.md)
+Let's go, click > [OpenShift.md](OpenShift.md)
 
-```
-
-```
-
-```
 
 ```
