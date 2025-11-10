@@ -109,6 +109,7 @@ mirror:
       channels:
       - name: fast
     - name: rhbk-operator
+      defaultChannel: stable-v26.4
       channels:
       - name: stable-v26.2
     - name: rhacs-operator
