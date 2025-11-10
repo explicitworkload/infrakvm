@@ -4,7 +4,7 @@ apiVersion: mirror.openshift.io/v1alpha2
 mirror:
   platform:
     channels:
-    - name: stable-4.20
+    - name: stable-4.19
       type: ocp
       #minVersion: 4.19.6 # optional
       #maxVersion: 4.19.6 # optional
@@ -41,10 +41,10 @@ mirror:
     #    - name: stable
     - name: lvms-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: authorino-operator
       channels:
       - name: stable
@@ -71,7 +71,7 @@ mirror:
       - name: stable
     - name: rook-ceph-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: kubernetes-nmstate-operator
       channels:
       - name: stable
@@ -104,7 +104,7 @@ mirror:
       - name: stable
     - name: rook-ceph-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: web-terminal
       channels:
       - name: fast
@@ -140,31 +140,31 @@ mirror:
       - name: stable-v1
     - name: ocs-client-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: ocs-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-csi-addons-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-dependencies
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-multicluster-orchestrator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-prometheus-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odr-cluster-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odr-hub-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: openshift-gitops-operator
       channels:
       - name: latest
@@ -179,7 +179,7 @@ mirror:
       - name: stable
     - name: cephcsi-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: compliance-operator
       channels:
       - name: stable
@@ -206,7 +206,7 @@ mirror:
       - name: stable
     - name: lvms-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: loki-operator
       channels:
       - name: stable-6.3
@@ -227,7 +227,7 @@ mirror:
       - name: stable
     - name: mcg-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: vertical-pod-autoscaler
       channels:
       - name: stable
@@ -239,7 +239,7 @@ mirror:
       - name: stable
     - name: cephcsi-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: devworkspace-operator
       channels:
       - name: fast

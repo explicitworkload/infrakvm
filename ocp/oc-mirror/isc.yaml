@@ -3,13 +3,13 @@ apiVersion: mirror.openshift.io/v1alpha2
 mirror:
   platform:
     channels:
-    - name: stable-4.20
+    - name: stable-4.19
       type: ocp
       #minVersion: 4.19.6 # optional
       #maxVersion: 4.19.6 # optional
     graph: true
   operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
     packages:
     - name: cluster-logging
       channels:
@@ -37,10 +37,10 @@ mirror:
       - name: stable
     - name: lvms-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: odf-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: authorino-operator
       channels:
       - name: stable
@@ -67,7 +67,7 @@ mirror:
       - name: stable
     - name: rook-ceph-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: kubernetes-nmstate-operator
       channels:
       - name: stable
@@ -100,11 +100,11 @@ mirror:
       - name: stable
     - name: rook-ceph-operator
       channels:
-      - name: stable-4.20
+      - name: stable-4.19
     - name: web-terminal
       channels:
       - name: fast
-  - catalog: registry.redhat.io/redhat/certified-operator-index:v4.20
+  - catalog: registry.redhat.io/redhat/certified-operator-index:v4.19
     packages:
     - name: gpu-operator-certified
       channels:
