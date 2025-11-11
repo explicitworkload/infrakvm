@@ -173,7 +173,17 @@ After the mirroring process completes, `oc-mirror` generates several Kubernetes 
 
 ---
 
-## Step 4. Create Installation Configuration Files
+## Step 4. Setup a Bootstrap Node (temporary)
+
+For the purpose of installation, we'll need to prepare a temporary bootstrap node for installation. Since the environment has pre-installed a bastion VM with RHEL, we will use that as a bootstrap node.
+
+1. SSH into bastion
+2. Install `oc` & `kubectl` client (reference back to how you installed it for Ubuntu)
+3. `git clone https://github.com/explicitworkload/infrakvm.git && cd infrakvm/ocp`
+
+## 💡 From this step onwards, we'll be using bastion/bootstrap unless specified.
+
+## Step 5. Create Installation Configuration Files
 
 Now that you've prepared the infrastructure and mirrored the necessary container images, the next stage of the agent-based installation is to create the configuration files that the installer will use to generate a bootable ISO. This ISO will then be used to deploy your OpenShift cluster.
 
@@ -182,12 +192,7 @@ This process involves two key files:
 - `install-config.yaml`: Defines the overall cluster configuration, including networking, the pull secret for your local registry, and the base domain.
 - `agent-config.yaml`: Specifies the network configuration for each of the cluster nodes (masters and workers).
 
-On your jumphost, create a directory to hold your installation configuration files. It's a good practice to keep these organized.
-
-```
-mkdir -p /data/ocp
-cd /data/ocp
-```
+On your **bootstrap** (bastion), we'll use `~/infrakvm/ocp/` to hold your installation configuration files, otherwise keep it in a folder you want. It's a good practice to keep these organized.
 
 1. Create [`install-config.yaml`](ocp/install-config.yaml)
 
@@ -208,13 +213,13 @@ cd /data/ocp
 
 ---
 
-## Step 5: Generate the Agent Boot ISO
+## Step 6: Generate the Agent Boot ISO
 
 With your configuration files in place, you can now generate the bootable ISO image.
 
 ### Download OpenShift Installer
 
-Download and extract OpenShift's installer and place the file in the directory `/data/infrakvm/ocp` where you'll store your configuration details.
+Download and extract OpenShift's installer and place the file in the directory `~/infrakvm/ocp` where you'll store your configuration details.
 
 1.  Navigate to the data directory.
     ```
@@ -227,11 +232,10 @@ Download and extract OpenShift's installer and place the file in the directory `
 3.  Extract the archive
 
     ```
-    tar -xvf openshift-install-linux.tar.gz
-    chmod +x openshift-install
+    tar -xvf openshift-install-linux.tar.gz && chmod +x openshift-install && rm openshift-install-linux.tar.gz README.md
     ```
 
-4.  Run the following command from within your `/data/ocp` directory:
+4.  Run the following command from within your `~/infrakvm/ocp` directory:
 
     ```
     ./openshift-install agent create image --dir .
@@ -239,20 +243,38 @@ Download and extract OpenShift's installer and place the file in the directory `
 
     This command will validate your configuration files and create an `agent.x86_64.iso` file.
 
+    ![agent.x86_64.iso](images/2025-11-12%2005.18.28@2x.png)
+
 ---
 
-## Step 6: Boot and Install the Cluster
+## Step 7: Boot and Install the Cluster
 
 1. **Upload the ISO:** Upload the generated `agent.x86_64.iso` to a datastore that is accessible by your VMs.
+
+   💡**Tip**: `scp lab-user@bastion-zrphd.zrphd.dynamic.redhatworkshops.io:~/infrakvm/ocp/agent.x86_64.iso .`
 
 2. **Boot from ISO:** Configure each of your six VMs (3 masters, 3 workers) to boot from this ISO image.
 
 3. **Start the VMs:** Power on the VMs. They will boot into a Red Hat Enterprise Linux CoreOS (RHCOS) environment, and the agent will begin the automated installation process. The node you designated as the `rendezvousIP` will coordinate the installation across all the nodes.
 
+   💡**Tip**: You may want to consider increasing vCPU & RAM to 16 vCPU & 32GB RAM to the rendezvous host during installation, since the node will be used as a bootstrap node.
+
 4. **Monitor the Installation:** You can monitor the progress of the installation by using the openshift-install command:
 
    ```
-   openshift-install agent wait-for install-complete --dir .
+   ./openshift-install agent wait-for install-complete --dir .
    ```
 
 The installation process will take some time. Once it is complete, you will have a fully functional OpenShift cluster
+
+💡**Fun fact**: At some point you'll notice API VIPs coming online, use ping to check it out!
+💡**Fun fact**: Check out adguard DNS queries,
+
+---
+
+## Step 8: Airgap with DNS
+
+While waiting for OpenShift installation to complete, let's setup our DNS rules to blockade OpenShift. Block the following FQDN
+
+- registry.redhat.io
+- quay.io
