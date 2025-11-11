@@ -8,7 +8,7 @@ QUAY_ROOT="${REPO_ROOT}/quay"
 
 # ---- files/dirs ----
 COMPOSE_FILE="${QUAY_ROOT}/docker-compose.yml"
-CONFIG_TOML="${QUAY_ROOT}/config/config.toml"
+CONFIG_YAML="${QUAY_ROOT}/config/config.yaml"
 ENV_FILE="${QUAY_ROOT}/.env"
 INIT_SQL="${QUAY_ROOT}/db/init/00-extensions.sql"
 
@@ -66,19 +66,30 @@ else
   echo "🌐 Network ${NETWORK_NAME} already exists."
 fi
 
-# Patch SERVER_HOSTNAME in config.toml, if present
-if [[ -f "$CONFIG_TOML" ]]; then
+# Patch SERVER_HOSTNAME in YAML (if file exists)
+if [[ -f "$CONFIG_YAML" ]]; then
   read -rp "Enter public SERVER_HOSTNAME (e.g. quay.example.com): " SERVER_HOSTNAME
   [[ -n "${SERVER_HOSTNAME}" ]] || die "SERVER_HOSTNAME cannot be empty."
-  if grep -q '^SERVER_HOSTNAME:' "$CONFIG_TOML"; then
-    sed -i.bak "s/^SERVER_HOSTNAME:.*/SERVER_HOSTNAME: ${SERVER_HOSTNAME}/" "$CONFIG_TOML"
+
+  # Replace or append SERVER_HOSTNAME: <value> safely in YAML
+  if grep -qE '^[[:space:]]*SERVER_HOSTNAME:' "$CONFIG_YAML"; then
+    cp "$CONFIG_YAML" "${CONFIG_YAML}.bak"
+    # preserve indentation if any
+    awk -v host="$SERVER_HOSTNAME" '
+      BEGIN{done=0}
+      /^[[:space:]]*SERVER_HOSTNAME:/ && !done { sub(/:.*/, ": " host); done=1 }
+      { print }
+      END{
+        if (!done) print "SERVER_HOSTNAME: " host
+      }
+    ' "$CONFIG_YAML".bak > "$CONFIG_YAML"
   else
-    echo "SERVER_HOSTNAME: ${SERVER_HOSTNAME}" >> "$CONFIG_TOML"
-    cp "$CONFIG_TOML" "${CONFIG_TOML}.bak"
+    cp "$CONFIG_YAML" "${CONFIG_YAML}.bak"
+    printf "\nSERVER_HOSTNAME: %s\n" "$SERVER_HOSTNAME" >> "$CONFIG_YAML"
   fi
-  echo "✅ Patched SERVER_HOSTNAME=${SERVER_HOSTNAME} in ${CONFIG_TOML} (backup: ${CONFIG_TOML}.bak)"
+  echo "✅ Patched SERVER_HOSTNAME=${SERVER_HOSTNAME} in ${CONFIG_YAML} (backup: ${CONFIG_YAML}.bak)"
 else
-  echo "⚠️  ${CONFIG_TOML} not found. Skipping hostname patch."
+  echo "⚠️  ${CONFIG_YAML} not found. Quay requires /conf/stack/config.yaml. Skipping hostname patch."
 fi
 
 # Bring up the stack
@@ -95,7 +106,7 @@ while true; do
       echo "✅ Quay is healthy."
       break
     fi
-    # Fallback to HTTP probe if no healthcheck yet
+    # fallback probe
     if docker exec "$QUAY_CONTAINER_NAME" bash -lc "curl -fsS http://localhost:8080/health/instance >/dev/null" 2>/dev/null; then
       echo "✅ Quay responded OK."
       break
