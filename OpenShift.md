@@ -179,11 +179,11 @@ mkdir -p /data/ocp
 cd /data/ocp
 ```
 
-1. Create [`install-config-vsphere.yaml`](ocp/install-config-vsphere.yaml)
+1. Create [`install-config.yaml`](ocp/install-config.yaml)
 
    This file tells the OpenShift installer how to build your cluster. You will need to customize it with details from your environment, such as your pull secret and the location of your mirrored images.
 
-   Use the provided [`install-config-vsphere.yaml`](ocp/install-config-vsphere.yaml). You must replace the placeholder values with your specific information.
+   Use the provided [`install-config.yaml`](ocp/install-config.yaml). You must replace the placeholder values with your specific information.
 
 2. Create [`agent-config.yaml`](ocp/agent-config.yaml)
 
