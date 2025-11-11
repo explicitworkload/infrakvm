@@ -164,7 +164,7 @@ Create a Proxy Host in NPM:
 
 Test Quay:
 - URL:   https://${SERVER_HOSTNAME:-<your FQDN>}
-- Login: ${QUAY_ADMIN_USER} / ${QUAY_ADMIN_PASS}
+- Login: ${QUAY_ADMIN_USER} / ${QUAY_ADMIN_PASS} (create your account quayadmin/quayadmin)
 
 Utilities:
 - Logs (Quay):   docker logs -f ${QUAY_CONTAINER_NAME}
