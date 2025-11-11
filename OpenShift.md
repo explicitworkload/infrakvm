@@ -86,15 +86,11 @@ Install the required OpenShift command-line tools on the **jumphost**.
 
 ### Install OpenShift and Kubernetes Clients (`oc` & `kubectl`)
 
-1.  Navigate to the data directory.
-    ```
-    cd /data
-    ```
-2.  Download the latest stable OpenShift client for Linux.
+1.  Download the latest stable OpenShift client for Linux.
     ```
     curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
     ```
-3.  Extract the archive and move the binaries to your system's PATH.
+2.  Extract the archive and move the binaries to your system's PATH.
     ```
     tar -xvf openshift-client-linux.tar.gz
     sudo mv oc kubectl /usr/bin/
@@ -216,13 +212,32 @@ cd /data/ocp
 
 With your configuration files in place, you can now generate the bootable ISO image.
 
-Run the following command from within your `/data/ocp` directory:
+### Download OpenShift Installer
 
-```
-openshift-install agent create image --dir .
-```
+Download and extract OpenShift's installer and place the file in the directory `/data/infrakvm/ocp` where you'll store your configuration details.
 
-This command will validate your configuration files and create an `agent.x86_64.iso` file.
+1.  Navigate to the data directory.
+    ```
+    cd /data/infrakvm/ocp
+    ```
+2.  Download the latest.
+    ```
+    curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-install-linux.tar.gz
+    ```
+3.  Extract the archive
+
+    ```
+    tar -xvf openshift-install-linux.tar.gz
+    chmod +x openshift-install
+    ```
+
+4.  Run the following command from within your `/data/ocp` directory:
+
+    ```
+    ./openshift-install agent create image --dir .
+    ```
+
+    This command will validate your configuration files and create an `agent.x86_64.iso` file.
 
 ---
 

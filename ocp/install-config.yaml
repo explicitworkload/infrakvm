@@ -7,13 +7,13 @@ compute:
   architecture: amd64
   hyperthreading: Enabled
   replicas: 3 # Labbers - Edit this
-  platform: vsphere
+  platform: {}
 controlPlane:
   name: master
   architecture: amd64
   hyperthreading: Enabled
   replicas: 3 # Labbers - Edit this
-  platform: vsphere
+  platform: {}
 metadata:
   name: zrphd # Labbers - Edit this, this is your cluster name
 networking:
@@ -26,17 +26,7 @@ networking:
   serviceNetwork:
   - 172.30.0.0/16
 platform:
-  #  none: {}
-  # platform.vsphere (not recommended for agent-based)
-  vsphere:
-    failureDomains:
-      topology:
-        folder: /SDDC-Datacenter/vm/Workloads/sandbox-xlrjz # Labbers - Edit this
-    vcenters:
-      datacenters:
-      server: vcsnsx-vc.infra.demo.redhat.com
-      user: sandbox-zrphd@demo
-      password: XXXXXXXXX # Labbers - Edit this
+  baremetal:
     apiVIPs:
     - 192.168.28.201 # Replace with your desired API Virtual IP
     ingressVIPs:
@@ -49,7 +39,7 @@ sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKY6TrKDE+xWKzVz/EISjPrpIxGBuCu+F
 # Labbers - Edit this
 # This section is critical for disconnected installs.
 # It points the cluster to your local Quay registry for container images.
-imageContentSources:
+ImageDigestSources:
 - mirrors:
   - quay.kubernetes.day/john/ocp4.19/openshift/release-images
   source: quay.io/openshift-release-dev/ocp-release
