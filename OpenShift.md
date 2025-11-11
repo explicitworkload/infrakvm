@@ -119,6 +119,13 @@ Install the required OpenShift command-line tools on the **jumphost**.
 
 For an air-gapped installation, you must first mirror the required container images to a local registry accessible by the cluster.
 
+### Obtain your Red Hat pullSecret
+
+- https://console.redhat.com -> Downloads -> Tokens -> Pull Secret
+- Merge them in `~/.docker/config.json`
+
+💡**Tip** In vm, `:%!jq .`
+
 ### Define the Image Set
 
 The `oc-mirror` tool uses an `imageset-config.yaml` file to determine which OpenShift version and operator images to mirror. The configuration files for this guide are stored in a Git repository that should be cloned into the `/data` directory on your jumphost.
@@ -144,6 +151,13 @@ Your environment includes a pre-configured Quay container registry. You will pus
 
     - https://quay.kubernetes.day
     - https://quay2.kubernetes.day
+
+    ```
+    docker login quay.kubernetes.day
+
+    username: <assigned-username>
+    password: <assigned-password>
+    ```
 
 2.  Push the images from your local tarball to the Quay registry. Replace `your_quay_username` with the username provided to you.
     ```
@@ -181,9 +195,14 @@ cd /data/ocp
 
 1. Create [`install-config.yaml`](ocp/install-config.yaml)
 
-   This file tells the OpenShift installer how to build your cluster. You will need to customize it with details from your environment, such as your pull secret and the location of your mirrored images.
+   This file tells the OpenShift installer how to build your cluster. You will need to customize it with details from your environment, such as your OpenShift pull secret, and the location of your mirrored images.
 
-   Use the provided [`install-config.yaml`](ocp/install-config.yaml). You must replace the placeholder values with your specific information.
+   - Use the provided [`install-config.yaml`](ocp/install-config.yaml). You must replace the placeholder values with your specific information.
+
+   💡 **Tip**
+
+   - pullSecret can be found in `~/.docker/config.json`
+   - Merge the lines with `vi` -> Press `Esc` -> Type `:%j` and press `Enter`.
 
 2. Create [`agent-config.yaml`](ocp/agent-config.yaml)
 
@@ -204,3 +223,21 @@ openshift-install agent create image --dir .
 ```
 
 This command will validate your configuration files and create an `agent.x86_64.iso` file.
+
+---
+
+## Step 6: Boot and Install the Cluster
+
+1. **Upload the ISO:** Upload the generated `agent.x86_64.iso` to a datastore that is accessible by your VMs.
+
+2. **Boot from ISO:** Configure each of your six VMs (3 masters, 3 workers) to boot from this ISO image.
+
+3. **Start the VMs:** Power on the VMs. They will boot into a Red Hat Enterprise Linux CoreOS (RHCOS) environment, and the agent will begin the automated installation process. The node you designated as the `rendezvousIP` will coordinate the installation across all the nodes.
+
+4. **Monitor the Installation:** You can monitor the progress of the installation by using the openshift-install command:
+
+   ```
+   openshift-install agent wait-for install-complete --dir .
+   ```
+
+The installation process will take some time. Once it is complete, you will have a fully functional OpenShift cluster

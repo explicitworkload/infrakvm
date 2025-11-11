@@ -56,3 +56,18 @@ imageContentSources:
 - mirrors:
   - quay.kubernetes.day/john/ocp4.19/openshift/release
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+
+#
+# additionalTrustBundle 
+#
+# Lets you bake your own CA certificates into the cluster’s trust store at install time.
+# This is useful in air-gapped environments where your registry may be using self-signed certificates.
+# Customer may be providing their own CA certificates to be trusted by the cluster.
+#
+#additionalTrustBundle: |
+#  -----BEGIN CERTIFICATE-----
+#  MIID...
+#  -----END CERTIFICATE-----
+#  -----BEGIN CERTIFICATE-----
+#  MIIF...
+#  -----END CERTIFICATE-----
