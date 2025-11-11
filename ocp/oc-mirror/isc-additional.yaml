@@ -122,9 +122,9 @@ mirror:
     - name: rhdh
       channels:
       - name: fast
-    - name: rhods-operator
-      channels:
-      - name: stable
+    #- name: rhods-operator
+    #  channels:
+    #  - name: stable
     - name: rhpam-kogito-operator
       channels:
       - name: 7.x
