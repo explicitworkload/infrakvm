@@ -1,24 +1,24 @@
 ALLOWED_OCI_ARTIFACT_TYPES:
-    application/vnd.oci.image.config.v1+json:
-      - application/vnd.oci.image.layer.v1.tar+zstd
-    application/vnd.sylabs.sif.config.v1+json:
-      - application/vnd.sylabs.sif.layer.v1+tar
+  application/vnd.oci.image.config.v1+json:
+  - application/vnd.oci.image.layer.v1.tar+zstd
+  application/vnd.sylabs.sif.config.v1+json:
+  - application/vnd.sylabs.sif.layer.v1+tar
 AUTHENTICATION_TYPE: Database
 AVATAR_KIND: local
 BUILDLOGS_REDIS:
-    host: quay-redis
-    port: 6379
+  host: quay-redis
+  port: 6379
 DATABASE_SECRET_KEY: 3bae7642-1d2e-4d94-b46a-e8402c501952
 DB_CONNECTION_ARGS: {}
 DB_URI: postgresql://quay:quay_password@quay-db/quay
 DEFAULT_TAG_EXPIRATION: 2w
 DISTRIBUTED_STORAGE_CONFIG:
-    default:
-      - LocalStorage
-      - storage_path: /datastorage/registry
+  default:
+  - LocalStorage
+  - storage_path: /datastorage/registry
 DISTRIBUTED_STORAGE_DEFAULT_LOCATIONS: []
 DISTRIBUTED_STORAGE_PREFERENCE:
-  - default
+- default
 FEATURE_ACI_CONVERSION: false
 FEATURE_ACTION_LOG_ROTATION: false
 FEATURE_ANONYMOUS_ACCESS: true
@@ -69,8 +69,8 @@ MAIL_PORT: 587
 MAIL_USE_AUTH: false
 MAIL_USE_TLS: false
 PREFERRED_URL_SCHEME: https
-REGISTRY_TITLE: Project Quay 2
-REGISTRY_TITLE_SHORT: Project Quay 2
+REGISTRY_TITLE: Project Quay
+REGISTRY_TITLE_SHORT: Project Quay
 REPO_MIRROR_INTERVAL: 30
 REPO_MIRROR_TLS_VERIFY: true
 SEARCH_MAX_RESULT_PAGE_COUNT: 10
@@ -80,21 +80,21 @@ SECURITY_SCANNER_INDEXING_INTERVAL: 30
 SERVER_HOSTNAME: <hostname>
 SETUP_COMPLETE: true
 TAG_EXPIRATION_OPTIONS:
-  - 0s
-  - 1d
-  - 1w
-  - 2w
-  - 4w
+- 0s
+- 1d
+- 1w
+- 2w
+- 4w
 TEAM_RESYNC_STALE_TIME: 30m
 TESTING: false
 USE_CDN: false
 USER_EVENTS_REDIS:
-    host: quay-redis
-    port: 6379
+  host: quay-redis
+  port: 6379
 USER_RECOVERY_TOKEN_LIFETIME: 30m
 USERFILES_LOCATION: default
 SUPER_USERS:
-  - john
-  - quayadmin
+- john
+- quayadmin
 EXTERNAL_TLS_TERMINATION: true
 USE_X_FORWARDED_PORT: true

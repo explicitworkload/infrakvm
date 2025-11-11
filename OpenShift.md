@@ -1,184 +1,158 @@
-## OpenShift Cluster Setup Guide
+# OpenShift Cluster Setup Guide
 
-This guide outlines the steps required to prepare the environment and install the necessary tools for deploying an OpenShift Container Platform cluster.
+This guide details the process for preparing the environment and deploying an OpenShift Container Platform cluster using the agent-based, air-gapped installation method.
+
+## Step 1: Prepare the Infrastructure
+
+This section covers provisioning the virtual machines for the cluster and configuring the storage on the jumphost.
 
 ### Prerequisites
 
 Before you begin, ensure the following requirements are met:
 
-- The `infrakvm` environment is properly set up and accessible. Otherwise, start at [Infrastructure Requirement](README.md)
+- The `infrakvm` environment is properly set up and accessible. If not, refer to the infrastructure requirements documentation.
 - A `jumphost` virtual machine is provisioned and running.
 
-## Step 1. Provision Virtual Machines
+### Provision Cluster Nodes
 
-1. Create six virtual machines to serve as the master and worker nodes for the OpenShift cluster. Configure each VM with a unique MAC address according to the specifications below.
+Provision six virtual machines with the following specifications. For easy identification, you can name the nodes `master-1`, `master-2`, `master-3`, `worker-1`, `worker-2`, and `worker-3`.
 
-   | Node Type  | Quantity | vCPU | RAM   | Storage1 | Storage2 | MAC Address Range                         |
-   | :--------- | :------- | :--- | :---- | :------- | :------- | :---------------------------------------- |
-   | **Master** | 3        | 8    | 16 GB | 120GB    | 50GB     | `00:50:56:00:00:01` - `00:50:56:00:00:03` |
-   | **Worker** | 3        | 16   | 32 GB | 120GB    | 50GB     | `00:50:56:00:00:04` - `00:50:56:00:00:06` |
+| Node Type  | Quantity | vCPU | RAM   | Storage1 | Storage2 | MAC Address Range                         |
+| :--------- | :------- | :--- | :---- | :------- | :------- | :---------------------------------------- |
+| **Master** | 3        | 8    | 16 GB | 120 GB   | 50 GB    | `00:50:56:00:00:01` - `00:50:56:00:00:03` |
+| **Worker** | 3        | 16   | 32 GB | 120 GB   | 50 GB    | `00:50:56:00:00:04` - `00:50:56:00:00:06` |
 
-   > 💬 **Note:**  
-   > You can name them master-1, master-2, master-3, worker-1, worker-2, worker-3...
+### Enable Disk UUID on VMware VMs
 
-2. Add disk.EnableUUID=true in each of the VM.
+> In a VMware environment, enabling `disk.EnableUUID=true` is critical. It exposes the virtual disk's unique identifier (UUID) to the guest OS, allowing Kubernetes to reliably identify and attach the correct persistent storage volumes. Without this setting, storage may fail to mount properly.
 
-   <em>(Specific to VMware only) Enabling `disk.EnableUUID=true` exposes the virtual disk's unique identifier (UUID) to the guest operating system. This is critical for an OpenShift cluster, as it allows Kubernetes to reliably identify and attach the correct persistent storage volumes to nodes. Without this setting, storage may fail to mount properly, leading to application downtime.</em>
+To enable this setting on each VM:
 
-   - Navigate to Edit Settings and select the Advanced Parameters section.
-   - In the **Attribute** column, type `disk.EnableUUID`.
-   - In the **Value** column, type `TRUE`.
-   - Click ADD and click Ok to save the changes.
+1.  Navigate to **Edit Settings** and select the **VM Options** tab.
+2.  Expand the **Advanced** section and click **Edit Configuration**.
+3.  Click **Add Configuration Params**.
+4.  In the **Name** column, enter `disk.EnableUUID`.
+5.  In the **Value** column, enter `TRUE`.
+6.  Click **OK** to save the changes.
 
 ### Configure Jumphost Storage
 
-You need to add and configure a dedicated 1 TB disk on the **jumphost** to store installation files and cluster assets.
+Add and configure a dedicated 1 TB disk on the **jumphost** to store installation files and cluster assets.
 
 1.  Power down the **jumphost** VM.
-2.  In vCenter, edit the VM's settings to add a new 1 TB hard disk.
+2.  In your hypervisor, edit the VM's settings to add a new 1 TB hard disk.
 3.  Power the **jumphost** back on.
-4.  Connect to the **jumphost** and run the following commands to partition, format, and mount the new disk. Verify the new disk is identified as `/dev/sdb` using the `lsblk` command before proceeding.
+4.  Connect to the **jumphost** and run the following commands to partition, format, and mount the new disk.
 
-    ```
-    # Verify the disk path
-    lsblk
+> ⚠️ **Important:** Before proceeding, run `lsblk` to verify the new disk is identified as `/dev/sdb`. Adjust the device path if necessary.
 
-    # Wipe any existing filesystem signatures
-    sudo wipefs -a /dev/sdb
+```
+# Wipe any existing filesystem signatures from the new disk
+sudo wipefs -a /dev/sdb
 
-    # Initialize the disk as a physical volume for LVM
-    sudo pvcreate /dev/sdb
+# Initialize the disk as a physical volume for LVM
+sudo pvcreate /dev/sdb
 
-    # Create a volume group named 'vgdata'
-    sudo vgcreate vgdata /dev/sdb
+# Create a volume group named 'vgdata'
+sudo vgcreate vgdata /dev/sdb
 
-    # Create a logical volume named 'lvdata' using all available space
-    sudo lvcreate -n lvdata -l 100%FREE vgdata
+# Create a logical volume named 'lvdata' that uses all available space
+sudo lvcreate -n lvdata -l 100%FREE vgdata
 
-    # Format the logical volume with an ext4 filesystem
-    sudo mkfs.ext4 -L data /dev/vgdata/lvdata
+# Format the logical volume with an ext4 filesystem
+sudo mkfs.ext4 -L data /dev/vgdata/lvdata
 
-    # Create the mount point
-    sudo mkdir -p /data
+# Create the mount point
+sudo mkdir -p /data
 
-    # Change ownership of the mount point to your user
-    # Replace <username> with your actual username
-    sudo chown -R <username> /data
+# Change ownership of the mount point to your user
+# Replace 'your_username' with your actual username
+sudo chown -R your_username /data
 
-    # Add the new filesystem to /etc/fstab for automatic mounting on boot
-    UUID=$(sudo blkid -s UUID -o value /dev/vgdata/lvdata)
-    echo "UUID=$UUID /data ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+# Add the new filesystem to /etc/fstab for automatic mounting on boot
+UUID=$(sudo blkid -s UUID -o value /dev/vgdata/lvdata)
+echo "UUID=$UUID /data ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
 
-    # Reload daemon services
-    sudo systemctl daemon-reload
+# Reload systemd and mount the new filesystem
+sudo systemctl daemon-reload
+sudo mount -a
+```
 
-    # Mount all filesystems listed in /etc/fstab
-    sudo mount -a
-    ```
+## Step 2: Install Command-Line Tools on Jumphost
 
----
+Install the required OpenShift command-line tools on the **jumphost**.
 
-## Step 2. Install OpenShift Client (oc)
+### Install OpenShift and Kubernetes Clients (`oc` & `kubectl`)
 
-Download and install the OpenShift command-line client (`oc`) on the **jumphost**.
-
-1.  Navigate to the newly created data directory.
-
+1.  Navigate to the data directory.
     ```
     cd /data
     ```
-
-2.  Download the latest stable OpenShift client for Linux from the official mirror.
-
+2.  Download the latest stable OpenShift client for Linux.
     ```
     curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
     ```
-
-3.  Extract the contents of the downloaded archive.
-
+3.  Extract the archive and move the binaries to your system's PATH.
     ```
     tar -xvf openshift-client-linux.tar.gz
-    ```
-
-4.  Move the `oc` binary to a directory in your system's PATH to make it globally accessible.
-    ```
     sudo mv oc kubectl /usr/bin/
     ```
 
----
+### Install the OpenShift Mirroring Tool (`oc-mirror`)
 
-## Step 3. OpenShift Installation (Agent-Based, Air-Gapped)
+1.  Download and extract the `oc-mirror` tool.
+    ```
+    curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.rhel9.tar.gz
+    tar -xvf oc-mirror.rhel9.tar.gz
+    ```
+2.  Move the binary to your system's PATH and verify the installation.
+    ```
+    sudo mv oc-mirror /usr/bin/
+    oc-mirror version
+    ```
 
-Installing OpenShift in an air-gapped (or disconnected) environment requires mirroring the necessary container images to a local registry that your cluster can access. The agent-based installer simplifies the node provisioning process.
+## Step 3: Mirror OpenShift Container Images
 
-#### 1. Set Up a Local Mirror Registry
+For an air-gapped installation, you must first mirror the required container images to a local registry accessible by the cluster.
 
-Your air-gapped environment needs a local container registry to store the OpenShift images. This registry has been pre-installed for you at https://quay.kubernetes.day/ & https://quay2.kubernetes.day/ so that you can skip this portion.
+### Define the Image Set
 
-💡 **Tip:** In the official OpenShift guide, take note the lightweight mirror-registry is not meant for production usage.
+The `oc-mirror` tool uses an `imageset-config.yaml` file to determine which OpenShift version and operator images to mirror. The configuration files for this guide are stored in a Git repository that should be cloned into the `/data` directory on your jumphost.
 
-#### 2. Mirror the OpenShift Images
+Example configuration files:
 
-Since the environment is (simulated) air-gapped, you'll still need to download the OpenShift images on a machine with internet access and then transfer them to your jumphost.
+- [`ocp/oc-mirror/isc.yaml`](ocp/oc-mirror/isc.yaml): Base OpenShift images.
+- [`ocp/oc-mirror/isc-additional.yaml`](ocp/oc-mirror/isc-additional.yaml): Additional operator images.
 
-1. On the jumphost, download the oc-mirror tool:
+### Mirror Images to a Local Directory
 
-   ```
-   curl -o oc-mirror.tar.gz https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.rhel9.tar.gz
-   tar -xvf oc-mirror.tar.gz
-   sudo mv oc-mirror /usr/bin
-   ```
+Run the `oc-mirror` command to download the images specified in your configuration. This command packages the images into a tarball in the `/data/mirror` directory. This step simulates downloading assets on an internet-connected machine before transferring them to the disconnected environment.
 
-2. Validate oc-mirror is working
+```
+oc-mirror --config=/data/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/
+```
 
-   ```
-   oc-mirror version
-   ```
+### Push Images to the Local Quay Registry
 
-3. Create an `imageset-config.yaml` file.
+Your environment includes a pre-configured Quay container registry. You will push the mirrored images to this registry to make them accessible to your OpenShift cluster during installation.
 
-   This file specifies which OpenShift version and operator images to mirror. Use a reference imageset configuration and build on from there.
+1.  Log in to your assigned Quay registry using the provided credentials.
 
-   - [isc.yaml](ocp/oc-mirror/isc.yaml)
-   - [isc-additional.yaml](ocp/oc-mirror/isc-additional.yaml) - Additional Operators
+    - https://quay.kubernetes.day
+    - https://quay2.kubernetes.day
 
-4. Mirror the images to a directory:
+2.  Push the images from your local tarball to the Quay registry. Replace `your_quay_username` with the username provided to you.
+    ```
+    oc-mirror --from=/data/mirror/ docker://quay.kubernetes.day/your_quay_username/ocp4.19/
+    ```
 
-   Run the oc-mirror command to download the images specified in your imageset-config.yaml. This will create a mirror\_<#>.tar file in the /data/mirror directory.
+### Review Generated Manifests
 
-   ```
-   oc-mirror --config=/data/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/ --v2
-   ```
+After the mirroring process completes, `oc-mirror` generates several Kubernetes manifest files that are required to configure your cluster to use the local registry.
 
-   💡 **Tip:** Take note that I have shifted the git repo to /data
+- **Location:** The generated resources are located in the `working-dir/cluster-resources` subdirectory within your mirror path (e.g., `/data/mirror/working-dir/cluster-resources`).
+- **Contents:** This directory includes essential manifests like `ImageDigestMirrorSet` (IDMS) and `CatalogSource` files. These must be applied to your OpenShift cluster after its initial deployment.
 
-5. Push the images to your local mirror registry:
+  ![oc-mirror result](images/2025-11-12%2000.49.22@2x.png)
 
-   On the jumphost, unpack the mirrored data and push it to your local registry.
-
-   Login to your container registry, I'll provide you the userid & password during the workshop.
-
-   - https://quay.kubernetes.day
-   - https://quay2.kubernetes.day
-
-   ```
-
-   # Navigate to the mirrored data directory
-   mkdir -p /data/mirror && cd /data/mirror
-
-   # Push the images to your local registry
-   oc-mirror --from=/data/mirror/ docker://quay.kubernetes.day/<username>/ocp4.19/ --v2
-   ```
-
-6. Generated Resources Location. When your mirror is done, you'll see the results like these.
-
-   After successful mirroring, cluster resources are generated in:
-
-   ```
-   <workspace_path>/working-dir/cluster-resources (e.g., /data/mirror/working-dir/cluster-resources)
-   ```
-
-   These include ImageDigestMirrorSet (IDMS), CatalogSource, and ClusterCatalog manifests that need to be applied to the target OpenShift cluster.
-
-   ![oc-mirror result](images/2025-11-12%2000.49.22@2x.png)
-   Should any error happen, you can look through the error list, or usually rectify them by retrying to mirror.
+  > 💡 **Tip:** If the mirroring process fails, review the error logs. Many common issues can be resolved by simply retrying the `oc-mirror` command.
