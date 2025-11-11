@@ -268,7 +268,7 @@ Download and extract OpenShift's installer and place the file in the directory `
 The installation process will take some time. Once it is complete, you will have a fully functional OpenShift cluster
 
 💡**Fun fact**: At some point you'll notice API VIPs coming online, use ping to check it out!
-💡**Fun fact**: Check out adguard DNS queries,
+💡**Fun fact**: Check out adguard DNS queries.
 
 ---
 
