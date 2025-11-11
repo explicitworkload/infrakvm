@@ -113,7 +113,9 @@ Installing OpenShift in an air-gapped (or disconnected) environment requires mir
 
 #### 1. Set Up a Local Mirror Registry
 
-Your air-gapped environment needs a local container registry to store the OpenShift images. This registry has been pre-installed for you at https://quay.kubernetes.day/ so that you can skip this portion. Take note the lightweight mirror-registry is not meant for production usage.
+Your air-gapped environment needs a local container registry to store the OpenShift images. This registry has been pre-installed for you at https://quay.kubernetes.day/ & https://quay2.kubernetes.day/ so that you can skip this portion.
+
+💡 **Tip:** In the official OpenShift guide, take note the lightweight mirror-registry is not meant for production usage.
 
 #### 2. Mirror the OpenShift Images
 
@@ -138,30 +140,45 @@ Since the environment is (simulated) air-gapped, you'll still need to download t
    This file specifies which OpenShift version and operator images to mirror. Use a reference imageset configuration and build on from there.
 
    - [isc.yaml](ocp/oc-mirror/isc.yaml)
-   - [isc-additional.yaml](ocp/oc-mirror/isc-additional.yaml)
+   - [isc-additional.yaml](ocp/oc-mirror/isc-additional.yaml) - Additional Operators
 
 4. Mirror the images to a directory:
 
-   Run the oc-mirror command to download the images specified in your imageset-config.yaml.
+   Run the oc-mirror command to download the images specified in your imageset-config.yaml. This will create a mirror\_<#>.tar file in the /data/mirror directory.
 
    ```
-   oc-mirror --config=~/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/ --v2
+   oc-mirror --config=/data/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/ --v2
    ```
 
-   This will create a mirror_seq<#>.tar file in the /data/mirror directory.
+   💡 **Tip:** Take note that I have shifted the git repo to /data
 
 5. Push the images to your local mirror registry:
 
    On the jumphost, unpack the mirrored data and push it to your local registry.
 
+   Login to your container registry, I'll provide you the userid & password during the workshop.
+
+   - https://quay.kubernetes.day
+   - https://quay2.kubernetes.day
+
    ```
-   Login to your container registry
-    - https://quay.kubernetes.day
-    - https://quay2.kubernetes.day
 
    # Navigate to the mirrored data directory
    mkdir -p /data/mirror && cd /data/mirror
 
    # Push the images to your local registry
-   oc-mirror --from=./mirror_seq1.tar docker://quay.kubernetes.day --v2
+   oc-mirror --from=/data/mirror/ docker://quay.kubernetes.day/<username>/ocp4.19/ --v2
    ```
+
+6. Generated Resources Location. When your mirror is done, you'll see the results like these.
+
+   After successful mirroring, cluster resources are generated in:
+
+   ```
+   <workspace_path>/working-dir/cluster-resources (e.g., /data/mirror/working-dir/cluster-resources)
+   ```
+
+   These include ImageDigestMirrorSet (IDMS), CatalogSource, and ClusterCatalog manifests that need to be applied to the target OpenShift cluster.
+
+   ![oc-mirror result](images/2025-11-12%2000.49.22@2x.png)
+   Should any error happen, you can look through the error list, or usually rectify them by retrying to mirror.

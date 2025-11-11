@@ -1,0 +1,84 @@
+services:
+  nginx-pm:
+    container_name: nginx-pm
+    image: "jlesage/nginx-proxy-manager:latest"
+    restart: unless-stopped
+    ports:
+      - "443:4443"
+      - "8181:8181"
+      - "8282:8080"
+    volumes:
+      - "/docker/nginx-pm:/config:rw"
+    environment:
+      - "USER_ID=${PUID}"
+      - "GROUP_ID=${PGID}"
+      - "TZ=${TZ}"
+      - "DISABLE_IPV6=1"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      lab_nw:
+
+  quay:
+    container_name: quay
+    image: quay.io/projectquay/quay:3.15.2
+    ports:
+      - "8080:8080" # UI and API
+      # - "8443:8443" # UI and API (HTTPS)
+    volumes:
+      - ./quay/config:/conf/stack:Z
+      - ./quay/storage:/datastorage:Z
+    depends_on:
+      - quay-redis
+      - quay-db
+    environment:
+      - DEBUGLOG=true
+    networks:
+      lab_nw:
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://localhost:8080/health/instance || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  quay-redis:
+    image: redis:latest
+    container_name: quay-redis
+    volumes:
+      - ./redis/data:/data:Z
+    networks:
+      lab_nw:
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  quay-db:
+    image: postgres:14
+    container_name: quay-db
+    volumes:
+      - ./db/data:/var/lib/postgresql/data:Z
+      - ./db/init:/docker-entrypoint-initdb.d:Z
+    environment:
+      - POSTGRES_USER=quay
+      - POSTGRES_PASSWORD=quay_password
+      - POSTGRES_DB=quay
+    networks:
+      lab_nw:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quay -d quay"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+networks:
+  lab_nw:
+    external: true
