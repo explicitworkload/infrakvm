@@ -21,7 +21,7 @@ QUAY_CONTAINER_NAME="quay"
 QUAY_ADMIN_USER="quayadmin"
 QUAY_ADMIN_PASS="quayadmin"
 QUAY_ADMIN_EMAIL="quayadmin@local"
-HEALTH_TIMEOUT_SECS=600
+HEALTH_TIMEOUT_SECS=30   # timeout shortened per request
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "Missing dependency: $1"; exit 1; }; }
 die() { echo "❌ $*"; exit 1; }
@@ -37,11 +37,23 @@ else
 fi
 
 [[ -f "$COMPOSE_FILE" ]] || die "Compose not found: $COMPOSE_FILE"
-mkdir -p "${QUAY_ROOT}/config" "${QUAY_ROOT}/storage" "${QUAY_ROOT}/db/data" "${QUAY_ROOT}/db/init" "${QUAY_ROOT}/redis/data" "${REPO_ROOT}/docker/nginx-pm" || true
 
-# .env for nginx-pm image variables
+# Ensure directory structure
+echo "📂 Ensuring directories exist under ${QUAY_ROOT} ..."
+mkdir -p \
+  "${QUAY_ROOT}/config" \
+  "${QUAY_ROOT}/storage" \
+  "${QUAY_ROOT}/redis/data" \
+  "${QUAY_ROOT}/db/data" \
+  "${QUAY_ROOT}/db/init" \
+  "${QUAY_ROOT}/nginx-pm"
+
+# Set open permissions for storage (for demo/student use)
+chmod 777 "${QUAY_ROOT}/storage" || echo "⚠️ Could not chmod 777 ${QUAY_ROOT}/storage"
+
+# .env for nginx-pm variables
 if [[ ! -f "$ENV_FILE" ]]; then
-cat > "$ENV_FILE" <<EOF
+  cat > "$ENV_FILE" <<EOF
 PUID=$(id -u)
 PGID=$(id -g)
 TZ=Asia/Singapore
@@ -49,9 +61,9 @@ EOF
   echo "📝 Wrote ${ENV_FILE}"
 fi
 
-# Ensure postgres extensions init file exists (safe if already present)
+# Postgres init extensions
 if [[ ! -f "$INIT_SQL" ]]; then
-cat > "$INIT_SQL" <<'SQL'
+  cat > "$INIT_SQL" <<'SQL'
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 SQL
@@ -66,15 +78,13 @@ else
   echo "🌐 Network ${NETWORK_NAME} already exists."
 fi
 
-# Patch SERVER_HOSTNAME in YAML (if file exists)
+# Patch SERVER_HOSTNAME in YAML
 if [[ -f "$CONFIG_YAML" ]]; then
   read -rp "Enter public SERVER_HOSTNAME (e.g. quay.example.com): " SERVER_HOSTNAME
   [[ -n "${SERVER_HOSTNAME}" ]] || die "SERVER_HOSTNAME cannot be empty."
 
-  # Replace or append SERVER_HOSTNAME: <value> safely in YAML
-  if grep -qE '^[[:space:]]*SERVER_HOSTNAME:' "$CONFIG_YAML"; then
-    cp "$CONFIG_YAML" "${CONFIG_YAML}.bak"
-    # preserve indentation if any
+  cp "$CONFIG_YAML" "${CONFIG_YAML}.bak"
+  if grep -qE '^[[:space:]]*SERVER_HOSTNAME:' "${CONFIG_YAML}.bak"; then
     awk -v host="$SERVER_HOSTNAME" '
       BEGIN{done=0}
       /^[[:space:]]*SERVER_HOSTNAME:/ && !done { sub(/:.*/, ": " host); done=1 }
@@ -82,9 +92,8 @@ if [[ -f "$CONFIG_YAML" ]]; then
       END{
         if (!done) print "SERVER_HOSTNAME: " host
       }
-    ' "$CONFIG_YAML".bak > "$CONFIG_YAML"
+    ' "${CONFIG_YAML}.bak" > "${CONFIG_YAML}"
   else
-    cp "$CONFIG_YAML" "${CONFIG_YAML}.bak"
     printf "\nSERVER_HOSTNAME: %s\n" "$SERVER_HOSTNAME" >> "$CONFIG_YAML"
   fi
   echo "✅ Patched SERVER_HOSTNAME=${SERVER_HOSTNAME} in ${CONFIG_YAML} (backup: ${CONFIG_YAML}.bak)"
@@ -93,11 +102,11 @@ else
 fi
 
 # Bring up the stack
-echo "🚀 Starting containers..."
+echo "🚀 Starting containers via compose..."
 ( cd "$QUAY_ROOT" && $COMPOSE -f "$COMPOSE_FILE" up -d )
 
 # Wait for Quay health
-echo "⏳ Waiting for Quay to become healthy (timeout ${HEALTH_TIMEOUT_SECS}s)..."
+echo "⏳ Waiting up to ${HEALTH_TIMEOUT_SECS}s for Quay health..."
 start_ts=$(date +%s)
 while true; do
   if docker inspect "$QUAY_CONTAINER_NAME" >/dev/null 2>&1; then
@@ -106,14 +115,13 @@ while true; do
       echo "✅ Quay is healthy."
       break
     fi
-    # fallback probe
     if docker exec "$QUAY_CONTAINER_NAME" bash -lc "curl -fsS http://localhost:8080/health/instance >/dev/null" 2>/dev/null; then
       echo "✅ Quay responded OK."
       break
     fi
   fi
   (( $(date +%s) - start_ts > HEALTH_TIMEOUT_SECS )) && die "Timed out waiting for Quay. Check: docker logs ${QUAY_CONTAINER_NAME}"
-  sleep 5
+  sleep 3
 done
 
 # Ensure admin user
@@ -161,5 +169,5 @@ Test Quay:
 Utilities:
 - Logs (Quay):   docker logs -f ${QUAY_CONTAINER_NAME}
 - Restart stack: (cd ${QUAY_ROOT} && ${COMPOSE} restart)
-- Tear down:     (cd ${QUAY_ROOT} && ${COMPOSE} down)   # data persists in quay/{db,redis,storage}
+- Tear down:     (cd ${QUAY_ROOT} && ${COMPOSE} down)
 EOF
