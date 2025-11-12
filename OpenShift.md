@@ -101,7 +101,7 @@ Install the required OpenShift command-line tools on the **jumphost**.
 1.  Download and extract the `oc-mirror` tool.
     ```
     curl -O https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.rhel9.tar.gz
-    tar -xvf oc-mirror.rhel9.tar.gz
+    tar -xvf oc-mirror.rhel9.tar.gz && sudo chmod +x oc-mirror && rm README.md
     ```
 2.  Move the binary to your system's PATH and verify the installation.
     ```
@@ -264,6 +264,8 @@ Download and extract OpenShift's installer and place the file in the directory `
    ```
    ./openshift-install agent wait-for install-complete --dir .
    ```
+
+   ![Documentation Link](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#installing-ocp-agent-verify_installing-with-agent-based-installer)
 
 The installation process will take some time. Once it is complete, you will have a fully functional OpenShift cluster
 
