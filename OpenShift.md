@@ -136,7 +136,7 @@ Example configuration files:
 Run the `oc-mirror` command to download the images specified in your configuration. This command packages the images into a tarball in the `/data/mirror` directory. This step simulates downloading assets on an internet-connected machine before transferring them to the disconnected environment.
 
 ```
-oc-mirror --config=/data/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/
+oc-mirror --config=/data/infrakvm/ocp/oc-mirror/isc.yaml file:///data/mirror/ --v2
 ```
 
 ### Push Images to the Local Quay Registry
@@ -157,7 +157,7 @@ Your environment includes a pre-configured Quay container registry. You will pus
 
 2.  Push the images from your local tarball to the Quay registry. Replace `your_quay_username` with the username provided to you.
     ```
-    oc-mirror --from=/data/mirror/ docker://quay.kubernetes.day/your_quay_username/ocp4.19/
+    oc-mirror --from=/data/mirror/ docker://quay.kubernetes.day/your_quay_username/ocp4.19/ --v2
     ```
 
 ### Review Generated Manifests
